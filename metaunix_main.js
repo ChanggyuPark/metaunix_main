@@ -1,7 +1,8 @@
-/* METAUNIX Sixshop /main landing — page-specific adapter. */
+/* METAUNIX Sixshop / and /main landing — page-specific adapter. */
 (() => {
   'use strict';
-  const PATH = '/main';
+  const PATHS = new Set(['/', '/main']);
+  const isTargetPath = () => PATHS.has(window.location.pathname);
   const PAGE_ID = 'page2765615';
   const ROOT_ID = 'metaunix-main-landing';
   const ROUTE_CLASS = 'metaunix-main-active';
@@ -13,7 +14,7 @@
     if (rechecking) return;
     rechecking = true;
     try {
-      const matchingPath = window.location.pathname === PATH;
+      const matchingPath = isTargetPath();
       const page = matchingPath ? document.getElementById(PAGE_ID) : null;
       const canMount = matchingPath && !!page && !!page.parentNode;
       const existingRoot = document.getElementById(ROOT_ID);
@@ -73,7 +74,7 @@ if(motionButton){setMotionPaused(reducedMotion.matches);motionButton.addEventLis
     setInterval(() => {
       const pathname = window.location.pathname;
       if (pathname !== lastPath) { lastPath = pathname; sync(); }
-      else if (pathname === PATH) {
+      else if (PATHS.has(pathname)) {
         const page = document.getElementById(PAGE_ID);
         if ((page && (!mountedPage || !document.getElementById(ROOT_ID))) ||
             (!page && mountedPage) || (page && mountedPage && page !== mountedPage)) sync();
@@ -82,7 +83,7 @@ if(motionButton){setMotionPaused(reducedMotion.matches);motionButton.addEventLis
     // Mutations handle delayed Sixshop page rendering without changing history APIs.
     const observer = new MutationObserver(() => {
       if (window.location.pathname !== lastPath) { lastPath = window.location.pathname; sync(); }
-      else if (window.location.pathname === PATH &&
+      else if (isTargetPath() &&
                !!document.getElementById(PAGE_ID) !== !!mountedPage) sync();
     });
     observer.observe(document.body, {childList:true,subtree:true});
